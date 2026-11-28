@@ -2,6 +2,9 @@ import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Prevent Node.js TLS from rejecting local antivirus / network proxy SSL inspection certificates
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: Number(process.env.SMTP_PORT) || 587,
