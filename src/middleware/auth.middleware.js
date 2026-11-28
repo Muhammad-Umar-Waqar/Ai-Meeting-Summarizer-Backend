@@ -41,3 +41,20 @@ export const requireAuth = async (req, res, next) => {
     });
   }
 };
+
+export const optionalAuth = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+      const user = await User.findById(decoded.id || decoded._id).select('-password -otp -otpExpiry');
+      if (user && user.isVerified) {
+        req.user = user;
+      }
+    }
+  } catch (_err) {
+    // optional, proceed without req.user
+  }
+  next();
+};
